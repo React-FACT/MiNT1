@@ -1,0 +1,117 @@
+
+.add-user input:required {
+  border-left: 2px solid red !important;
+}
+
+.add-user input {
+  padding: 7px 10px;
+  border: 1px solid #767676;
+  border-radius: 2px;
+  margin-bottom: 10px!important;
+}
+
+.add-user input, .add-user textarea, .address-add-user {
+  width: calc(100% - 113px);
+}
+
+input[name="phone"] {
+  width: calc(100% - 50% - 191px);
+}
+
+.add-user select {
+  margin-bottom: 10px;
+  padding: 7px 10px;
+}
+
+.add-user input:focus-visible {
+  outline: 2px solid #edc2ff;
+}
+
+.add-user label {
+  width: 100px;
+}
+
+.form-50 {
+  width: 50%;
+}
+
+.address-add-user {
+  display: flex !important;
+  justify-content: space-between;
+}
+/* 
+.address-add-user select, .add-user textarea {
+  margin-left: 5px;
+  margin-right: -5px;
+} */
+
+.address-add-user select {
+  width: 24%;
+}
+
+.validate-input {
+  font-size: 80%;
+  margin: -8px 0 10px 113px;
+}
+
+.show-add-modal {
+  height: 100%;
+  border-radius: 5px;
+}
+
+.row-me {
+  display: flex;
+}
+
+@media only screen and (max-width: 1279px) {
+  .scroll-respensive {
+    overflow-x: scroll;
+    width: 100vw;
+  }
+}
+
+@media only screen and (max-width: 768px) and (min-width: 320px) {
+  .row-me {
+    display: block;
+  }
+  .form-50 {
+    width: 100%;
+  }
+
+  .add-user label {
+    text-align: left!important;
+    width: 85px !important;
+  }
+
+  .add-user input, .add-user textarea, .address-add-user {
+    width: calc(100% - 98px)!important;
+  }
+
+  .address-add-user {
+    display: block!important;
+  }
+
+  input[type="checkbox"] {
+    width: auto!important;
+  }
+
+  input[name="phone"] {
+    max-width: calc(100% - 177px)!important;
+  }
+
+  .address-add-user select, .address-add-user textarea {
+    width: 49%!important;
+    margin-left: 4px !important;
+    margin-right: -4px!important;
+  }
+
+  .address-add-user select:nth-child(2n) {
+    float: right;
+  }
+}
+
+@media only screen and (min-width: 1279px) {
+  .modall-content {
+    width: 80%;
+  }
+}
