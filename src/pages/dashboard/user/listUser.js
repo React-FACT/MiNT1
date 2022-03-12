@@ -1,17 +1,38 @@
 import moment from "moment";
 import React, { useEffect } from "react";
+import { useAlert } from "react-alert";
 import { useDispatch, useSelector } from "react-redux";
 import CreateModal from "../../../components/modal";
-import { getUsersAction } from "../../../redux/action/auth.action";
+import {
+  deleteUserAction,
+  getUsersAction,
+} from "../../../redux/action/auth.action";
+import * as auth from "../../../redux/constant/auth.constant";
 
 const ListUser = () => {
   const dispatch = useDispatch();
+  const alert = useAlert();
 
   const { users } = useSelector((state) => state.users);
+  const { isDeleted, isSuccess } = useSelector((state) => state.user);
+
+  const deleteHandler = (id) => {
+    dispatch(deleteUserAction(id));
+  };
 
   useEffect(() => {
     dispatch(getUsersAction());
-  }, [dispatch]);
+
+    if (isDeleted) {
+      alert.success("Đã xóa thành công người dùng");
+      dispatch({ type: auth.DELETE_USER_RESET });
+    }
+
+    if (isSuccess) {
+      alert.success("Thêm người dùng thành công");
+      dispatch({ type: auth.ADD_USER_RESET });
+    }
+  }, [dispatch, alert, isDeleted, isSuccess]);
 
   return (
     <div className="table-container">
