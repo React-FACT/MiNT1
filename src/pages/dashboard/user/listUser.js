@@ -1,30 +1,32 @@
-import React, { useState, useEffect } from "react";
+import moment from "moment";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CreateModal from "../../../components/modal";
-import "./listUser.css";
 import { getUsersAction } from "../../../redux/action/auth.action";
-import store from "../../../redux/store";
 
 const ListUser = () => {
   const dispatch = useDispatch();
 
-  const users = store.getState().users;
+  const { users } = useSelector((state) => state.users);
+
   useEffect(() => {
-    dispatch(getUsersAction())
-  })
+    dispatch(getUsersAction());
+  }, [dispatch]);
+
   return (
     <div className="table-container">
       <div className="table-wrap">
         <h1 className="text-center">List User</h1>
         <CreateModal />
-        <div style={{ margin: "auto", width: "80%" }}>
+        <div style={{ margin: "auto", width: "85%" }}>
           <table className="table table-striped table-hover table-bordered">
             <thead>
               <tr className="table-secondary">
                 <th>ID</th>
                 <th>Full Name</th>
                 <th>Email</th>
-                <th>Birthday</th>
+                <th>Address</th>
+                <th>Created At</th>
                 <th>Admin</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -35,20 +37,24 @@ const ListUser = () => {
                 return (
                   <tr key={user.id}>
                     <td>{user.id}</td>
-                    <td>{user.name}</td>
+                    <td>{user.username}</td>
                     <td>{user.email}</td>
-                    <td>{user.birthday}</td>
-                    <td>{user.admin === true ? "Admin" : "User"}</td>
-                    <td>{user.status === true ? "Active" : "Inactive"}</td>
+                    <td>{user.address}</td>
+                    <td>{moment(user.createdAt).format("DD-MM-YYYY")}</td>
+                    <td>{user.roleName}</td>
+                    <td>{user.actived === true ? "Active" : "Inactive"}</td>
                     <td>
                       <div className="btn btn-outline-secondary me-1">
-                        <i class="fa-solid fa-eye"></i>
+                        <i className="fa-solid fa-eye"></i>
                       </div>
                       <div className="btn btn-outline-primary me-1">
-                        <i class="fa-solid fa-pen-to-square"></i>
+                        <i className="fa-solid fa-pen-to-square"></i>
                       </div>
-                      <div className="btn btn-outline-danger">
-                        <i class="fa-solid fa-trash-can"></i>
+                      <div
+                        className="btn btn-outline-danger"
+                        onClick={() => deleteHandler(user.id)}
+                      >
+                        <i className="fa-solid fa-trash-can"></i>
                       </div>
                     </td>
                   </tr>

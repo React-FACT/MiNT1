@@ -1,11 +1,10 @@
 import * as auth from "../constant/auth.constant";
 
-export const authReducer = (state = { users: {huhiu: 'acd'} }, action) => {
+export const authReducer = (state = {users: []}, action) => {
   switch (action.type) {
     case auth.GET_USERS_REQUEST:
       return {
         loading: true,
-        users: {}
       };
     case auth.GET_USERS_SUCCESS:
       return {
@@ -17,5 +16,8 @@ export const authReducer = (state = { users: {huhiu: 'acd'} }, action) => {
         ...state,
         error: "Error get user",
       };
+
+    default:
+      return state;
   }
 };

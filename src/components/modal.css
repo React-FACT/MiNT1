@@ -39,11 +39,6 @@ input[name="phone"] {
   display: flex !important;
   justify-content: space-between;
 }
-/* 
-.address-add-user select, .add-user textarea {
-  margin-left: 5px;
-  margin-right: -5px;
-} */
 
 .address-add-user select {
   width: 24%;

@@ -1,8 +1,7 @@
-import { useState } from "react";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import { useState } from "react";
+import addressData from "../addressData.json";
 import "./modal.css";
 
 const style = {
@@ -17,35 +16,23 @@ const style = {
 };
 
 const CreateModal = () => {
+
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
+  const [roleId, setRoleId] = useState("");
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState("");
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
-
-  const validateInput = (field, key) => {
-    const validateNode = document.querySelectorAll(`.validate-${field}`);
-
-    if (
-      field === "" ||
-      (key === "email" && field.substr(-10) !== "@gmail.com")
-    ) {
-      validateNode.classList.remove("d-none");
-    } else {
-      validateNode.classList.add("d-none");
-    }
-  };
 
   return (
     <div
@@ -62,69 +49,66 @@ const CreateModal = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <div class="add-user">
-            <form>
-              <div class="row-me">
-                <div class="form-50">
-                  <label class="text-left mr-2">User Name</label>
+          <div className="add-user">
+            <form onSubmit={submitHandle}>
+              <div className="row-me">
+                <div className="form-50">
+                  <label className="text-left mr-2">Họ và tên</label>
                   <input
                     type="text"
                     name="userName"
-                    onBlur={() => validateInput(name, "name")}
                     required
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
-                  <div class="validate-name d-none text-danger">
-                    *Vui lòng nhập User name
-                  </div>
                 </div>
-                <div class="form-50">
-                  <label class="text-right mr-2">Password</label>
+                <div className="form-50">
+                  <label className="text-right mr-2">Mật khẩu</label>
                   <input
                     type="password"
                     name="password"
-                    onBlur={() => validateInput(password, "password")}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-                  <div class="validate-password d-none text-danger">
-                    *Vui lòng nhập password
-                  </div>
                 </div>
               </div>
 
-              <div class="row-me">
-                <div class="form-50">
-                  <label class="text-left mr-2">First Name</label>
-                  <input type="text" name="firstName" />
+              <div className="row-me">
+                <div className="form-50">
+                  <label className="text-left mr-2">First Name</label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    onChange={(e) => setFName(e.target.value)}
+                  />
                 </div>
-                <div class="form-50">
-                  <label class="text-right mr-2">Last Name</label>
+                <div className="form-50">
+                  <label className="text-right mr-2">Last Name</label>
                   <input
                     type="text"
                     name="lastName"
-                    onBlur={() => validateInput(lName, "lastName")}
                     onChange={(e) => setLName(e.target.value)}
                     required
                   />
-                  <div class="validate-lastName d-none text-danger">
-                    *Vui lòng nhập Last name
-                  </div>
                 </div>
               </div>
 
-              <div class="row-me">
-                <div class="form-50">
-                  <label class="text-left mr-2">Role</label>
-                  <select name="role" onChange={(e) => setRole(e.target.value)}>
-                    <option value="admin">Administrator</option>
-                    <option value="user">User</option>
+              <div className="row-me">
+                <div className="form-50">
+                  <label className="text-left mr-2">Role</label>
+                  <select
+                    name="role"
+                    defaultValue={roles && roles[0]?.id}
+                    className="form-select w-25 d-inline-block"
+                    onChange={(e) => setRoleId(e.target.value)}
+                  >
+                    <option>admin</option>
                   </select>
                 </div>
-                <div class="form-50">
-                  <label class="text-right mr-2">Status</label>
+                <div className="form-50">
+                  <label className="text-right mr-2">Status</label>
                   <select
                     name="status"
+                    className="form-select w-25 d-inline-block"
                     onChange={(e) => setStatus(e.target.value)}
                   >
                     <option value="active">Active</option>
@@ -133,27 +117,19 @@ const CreateModal = () => {
                 </div>
               </div>
 
-              <div class="w-100">
-                <label class="text-left mr-2">Email</label>
+              <div className="w-100">
+                <label className="text-left mr-2">Email</label>
                 <input
                   type="text"
                   name="email"
                   id="email-add-user"
-                  onBlur={() => validateInput("email")}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                <div class="validate-input d-none text-danger">
-                  *Email không đúng định dạng
-                </div>
               </div>
 
-              <div class="w-100">
-                <label class="text-left mr-2">Phone</label>
-                <select name="head-phone" id="head-phone">
-                  <option value="+84">+84</option>
-                  <option value="+86">+86</option>
-                </select>
+              <div className="w-100">
+                <label className="text-left mr-2">Phone</label>
                 <input
                   type="text"
                   name="phone"
@@ -161,65 +137,101 @@ const CreateModal = () => {
                 />
               </div>
 
-              <div class="w-100 d-flex align-items-center">
-                <label class="text-left mr-2">Address</label>
-                <div class="address-add-user">
+              <div className="w-100 d-flex align-items-center">
+                <label className="text-left mr-2">Address</label>
+                <div className="address-add-user">
                   <select
                     name="country"
                     id="country"
+                    className="form-control"
+                    value={country}
                     onChange={(e) => setCountry(e.target.value)}
                   >
-                    <option hidden>Chọn Quốc Gia</option>
-                    <option value="1">Việt Nam</option>
-                    <option value="2">Lào</option>
+                    <option selected value="1">
+                      Việt Nam
+                    </option>
                   </select>
                   <select
                     name="city"
                     id="city"
+                    className="form-control"
+                    value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    disabled
                   >
-                    <option hidden>Chọn Tỉnh</option>
+                    <option hidden>Vui lòng chọn thành phố/tỉnh...</option>
+                    {addressData?.map((tp) => (
+                      <option key={tp.Id} value={tp.Name}>
+                        {tp.Name}
+                      </option>
+                    ))}
                   </select>
                   <select
                     name="district"
                     id="district"
+                    className="form-control"
+                    value={district}
                     onChange={(e) => setDistrict(e.target.value)}
-                    disabled
+                    required
                   >
-                    <option hidden>Chọn Quận/Huyện</option>
+                    <option hidden>Vui lòng chọn quận/huyện...</option>
+                    {addressData &&
+                      addressData.map(
+                        (tp) =>
+                          tp.Name === city &&
+                          tp.Districts.map((h) => (
+                            <option key={h.Id} value={h.Name}>
+                              {h.Name}
+                            </option>
+                          ))
+                      )}
                   </select>
 
                   <select
                     name="ward"
                     id="ward"
+                    className="form-control"
+                    value={ward}
                     onChange={(e) => setWard(e.target.value)}
-                    disabled
+                    required
                   >
-                    <option hidden>Chọn xã/phường</option>
+                    <option hidden>Vui lòng chọn xã/phường...</option>
+                    {addressData &&
+                      addressData.map(
+                        (tp) =>
+                          tp.Name === city &&
+                          tp.Districts.map(
+                            (h) =>
+                              h.Name === district &&
+                              h.Wards.map((x) => (
+                                <option key={x.Id} value={x.Name}>
+                                  {x.Name}
+                                </option>
+                              ))
+                          )
+                      )}
                   </select>
                 </div>
               </div>
-              <div class="w-100">
-                <label class="text-right mr-2"></label>
+              <div className="w-100">
+                <label className="text-right mr-2"></label>
                 <input type="text" name="address" />
               </div>
 
-              <div class="w-100 d-flex">
-                <label class="text-left mr-2">Note</label>
+              <div className="w-100 d-flex">
+                <label className="text-left mr-2">Note</label>
                 <textarea name="note" id="note"></textarea>
               </div>
 
-              <div class="d-flex justify-content-end mt-3">
+              <div className="d-flex justify-content-end mt-3">
                 <div
-                  class="btn btn-secondary"
+                  className="btn btn-secondary"
                   onClick={() => handleClose()}
                 >
                   Cancel
                 </div>
-                <div class="btn btn-success ms-3" onClick={() => handleClose()}>
+                <button type="submit" className="btn btn-success ms-3">
                   Save
-                </div>
+                </button>
               </div>
             </form>
           </div>

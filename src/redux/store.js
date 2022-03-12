@@ -3,17 +3,15 @@ import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { authReducer } from './reducer/auth.reducer'
 
-// const reducer = combineReducers({
-//   users: authReducer
-// })
+const reducer = combineReducers({
+  users: authReducer
+})
 
-let initalState = {
-  cart: {abc: 'abc'},
-};
+let initalState = {};
 
 const middleware = [thunk];
 const store = createStore(
-  authReducer,
+  reducer,
   initalState,
   composeWithDevTools(applyMiddleware(...middleware))
 );

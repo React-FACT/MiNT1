@@ -1,8 +1,11 @@
 import React, { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAlert } from 'react-alert';
+import * as url from '../../constants';
 import "./login.css";
 
 const Login = () => {
+  const alert = useAlert();
   const history = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,12 +21,12 @@ const Login = () => {
 
   const loginBtn = () => {
     if (email === admin.email && password === admin.password) {
-      // window.alert("Xin chào admin");
-      history("/list-users");
+      alert.success("Welcome to dashboard")
+      history(url.LOGIN);
     } else if (email === user.email && password === user.password) {
-      window.alert("Xin chào user");
+      window.alert("Hi user");
     } else {
-      alert("Tài khoản hoặc mật khẩu không đúng, vui lòng nhập lại!");
+      alert("Username or password incorrect. Please re-enter!");
     }
     setEmail("");
     setPassword("");
