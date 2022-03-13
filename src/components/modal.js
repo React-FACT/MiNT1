@@ -1,7 +1,11 @@
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAlert } from "react-alert";
+import { useDispatch, useSelector } from "react-redux";
 import addressData from "../addressData.json";
+import { createUserAction } from "../redux/action/auth.action";
+import { getRolesAction } from "../redux/action/role.action";
 import "./modal.css";
 
 const style = {
@@ -16,6 +20,8 @@ const style = {
 };
 
 const CreateModal = () => {
+  const dispatch = useDispatch();
+  const alert = useAlert();
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -33,6 +39,29 @@ const CreateModal = () => {
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
+
+  const { roles } = useSelector((state) => state.roles);
+  const { isSuccess } = useSelector((state) => state.user);
+
+  const submitHandle = (e) => {
+    e.preventDefault();
+    if (username === "" || email === "" || password === "") {
+      alert.error("Please enter full information");
+    } else {
+      const address = `${ward}, ${district}, ${city}, ${country}`;
+      dispatch(
+        createUserAction({ username, email, password, address, roleId })
+      );
+    }
+  };
+
+  useEffect(() => {
+    dispatch(getRolesAction());
+
+    if (isSuccess) {
+      handleClose();
+    }
+  }, [dispatch, isSuccess]);
 
   return (
     <div
@@ -101,7 +130,11 @@ const CreateModal = () => {
                     className="form-select w-25 d-inline-block"
                     onChange={(e) => setRoleId(e.target.value)}
                   >
-                    <option>admin</option>
+                    {roles?.map((role) => (
+                      <option key={role.id} value={role.id}>
+                        {role.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="form-50">
