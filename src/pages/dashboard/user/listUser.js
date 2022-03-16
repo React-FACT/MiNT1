@@ -1,12 +1,12 @@
 import moment from "moment";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAlert } from "react-alert";
 import { useDispatch, useSelector } from "react-redux";
 import CreateModal from "../../../components/modal";
 import {
   deleteUserAction,
-  getUsersAction,
 } from "../../../redux/action/auth.action";
+import actions from "../../../redux/action";
 import * as auth from "../../../redux/constant/auth.constant";
 
 const ListUser = () => {
@@ -21,8 +21,8 @@ const ListUser = () => {
   };
 
   useEffect(() => {
-    dispatch(getUsersAction());
-
+    dispatch(actions.getAllUsers());
+    
     if (isDeleted) {
       alert.success("Đã xóa thành công người dùng");
       dispatch({ type: auth.DELETE_USER_RESET });

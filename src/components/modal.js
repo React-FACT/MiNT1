@@ -1,14 +1,14 @@
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
+import { Formik } from "formik";
 import { useEffect, useState } from "react";
-import { useAlert } from "react-alert";
 import { useDispatch, useSelector } from "react-redux";
 import addressData from "../addressData.json";
+import actions from "../redux/action";
 import { createUserAction } from "../redux/action/auth.action";
-import { getRolesAction } from "../redux/action/role.action";
 import "./modal.css";
 
-const style = {
+const style = { 
   position: "absolute",
   top: "50%",
   left: "50%",
@@ -21,47 +21,50 @@ const style = {
 
 const CreateModal = () => {
   const dispatch = useDispatch();
-  const alert = useAlert();
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [fName, setFName] = useState("");
-  const [lName, setLName] = useState("");
-  const [email, setEmail] = useState("");
-  const [roleId, setRoleId] = useState("");
-  const [phone, setPhone] = useState("");
-  const [status, setStatus] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [district, setDistrict] = useState("");
-  const [ward, setWard] = useState("");
-
   const { roles } = useSelector((state) => state.roles);
   const { isSuccess } = useSelector((state) => state.user);
 
-  const submitHandle = (e) => {
-    e.preventDefault();
-    if (username === "" || email === "" || password === "") {
-      alert.error("Please enter full information");
-    } else {
-      const address = `${ward}, ${district}, ${city}, ${country}`;
-      dispatch(
-        createUserAction({ username, email, password, address, roleId })
-      );
-    }
-  };
-
   useEffect(() => {
-    dispatch(getRolesAction());
+    dispatch(actions.getAllRoles());
 
     if (isSuccess) {
       handleClose();
     }
   }, [dispatch, isSuccess]);
+
+  const validate = (values) => {
+    const errors = {};
+    if (!values.email) {
+      errors.email = "Please enter email";
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+      errors.email = "Invalid email address";
+    }
+    if (!values.password) {
+      errors.password = "Please enter password";
+    }
+    if (!values.username) {
+      errors.username = "Please enter username";
+    }
+    return errors;
+  };
+
+  const submitHandle = (values) => {
+    const address = `${values.ward}, ${values.district}, ${values.city}, Cần Thơ`;
+    dispatch(
+      createUserAction({
+        username: values.username,
+        email: values.email,
+        password: values.password,
+        address: address,
+        roleId: values.roleId,
+      })
+    );
+  };
 
   return (
     <div
@@ -79,194 +82,220 @@ const CreateModal = () => {
       >
         <Box sx={style}>
           <div className="add-user">
-            <form onSubmit={submitHandle}>
-              <div className="row-me">
-                <div className="form-50">
-                  <label className="text-left mr-2">Họ và tên</label>
-                  <input
-                    type="text"
-                    name="userName"
-                    required
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-                <div className="form-50">
-                  <label className="text-right mr-2">Mật khẩu</label>
-                  <input
-                    type="password"
-                    name="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
+            <Formik
+              initialValues={{
+                username: "",
+                password: "",
+                email: "",
+                ward: "",
+                district: "",
+                city: "",
+                roleId: "",
+              }}
+              validate={(values) => validate(values)}
+              onSubmit={(values, { setSubmitting }) => {
+                submitHandle(values);
+                setSubmitting(false);
+              }}
+            >
+              {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                isSubmitting,
+              }) => (
+                <form onSubmit={handleSubmit}>
+                  <div className="row-me">
+                    <div className="form-50">
+                      <label className="text-left mr-2">Họ và tên</label>
+                      <input
+                        type="text"
+                        name="username"
+                        value={values.username}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <div className="validate-input text-danger">
+                        {errors.username && touched.username && errors.username}
+                      </div>
+                    </div>
+                    <div className="form-50">
+                      <label className="text-right mr-2">Mật khẩu</label>
+                      <input
+                        type="password"
+                        name="password"
+                        value={values.password}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <div className="validate-input text-danger">
+                        {errors.password && touched.password && errors.password}
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="row-me">
-                <div className="form-50">
-                  <label className="text-left mr-2">First Name</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    onChange={(e) => setFName(e.target.value)}
-                  />
-                </div>
-                <div className="form-50">
-                  <label className="text-right mr-2">Last Name</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    onChange={(e) => setLName(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
+                  <div className="row-me">
+                    <div className="form-50">
+                      <label className="text-left mr-2">First Name</label>
+                      <input type="text" name="firstName" />
+                    </div>
+                    <div className="form-50">
+                      <label className="text-right mr-2">Last Name</label>
+                      <input type="text" name="lastName" />
+                    </div>
+                  </div>
 
-              <div className="row-me">
-                <div className="form-50">
-                  <label className="text-left mr-2">Role</label>
-                  <select
-                    name="role"
-                    defaultValue={roles && roles[0]?.id}
-                    className="form-select w-25 d-inline-block"
-                    onChange={(e) => setRoleId(e.target.value)}
-                  >
-                    {roles?.map((role) => (
-                      <option key={role.id} value={role.id}>
-                        {role.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-50">
-                  <label className="text-right mr-2">Status</label>
-                  <select
-                    name="status"
-                    className="form-select w-25 d-inline-block"
-                    onChange={(e) => setStatus(e.target.value)}
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
+                  <div className="row-me">
+                    <div className="form-50">
+                      <label className="text-left mr-2">Role</label>
+                      <select
+                        name="roleId"
+                        // defaultValue={roles && roles[0]?.id}
+                        className="form-select w-25 d-inline-block"
+                        value={values.roleId}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      >
+                        {roles?.map((role) => (
+                          <option key={role.id} value={role.id}>
+                            {role.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-50">
+                      <label className="text-right mr-2">Status</label>
+                      <select
+                        name="status"
+                        className="form-select w-25 d-inline-block"
+                      >
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+                  </div>
 
-              <div className="w-100">
-                <label className="text-left mr-2">Email</label>
-                <input
-                  type="text"
-                  name="email"
-                  id="email-add-user"
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
+                  <div className="w-100">
+                    <label className="text-left mr-2">Email</label>
+                    <input
+                      type="text"
+                      name="email"
+                      id="email-add-user"
+                      value={values.email}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <div className="validate-input text-danger">
+                      {errors.email && touched.email && errors.email}
+                    </div>
+                  </div>
 
-              <div className="w-100">
-                <label className="text-left mr-2">Phone</label>
-                <input
-                  type="text"
-                  name="phone"
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-              </div>
+                  <div className="w-100">
+                    <label className="text-left mr-2">Phone</label>
+                    <input type="text" name="phone" />
+                  </div>
 
-              <div className="w-100 d-flex align-items-center">
-                <label className="text-left mr-2">Address</label>
-                <div className="address-add-user">
-                  <select
-                    name="country"
-                    id="country"
-                    className="form-control"
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                  >
-                    <option selected value="1">
-                      Việt Nam
-                    </option>
-                  </select>
-                  <select
-                    name="city"
-                    id="city"
-                    className="form-control"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                  >
-                    <option hidden>Vui lòng chọn thành phố/tỉnh...</option>
-                    {addressData?.map((tp) => (
-                      <option key={tp.Id} value={tp.Name}>
-                        {tp.Name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    name="district"
-                    id="district"
-                    className="form-control"
-                    value={district}
-                    onChange={(e) => setDistrict(e.target.value)}
-                    required
-                  >
-                    <option hidden>Vui lòng chọn quận/huyện...</option>
-                    {addressData &&
-                      addressData.map(
-                        (tp) =>
-                          tp.Name === city &&
-                          tp.Districts.map((h) => (
-                            <option key={h.Id} value={h.Name}>
-                              {h.Name}
-                            </option>
-                          ))
-                      )}
-                  </select>
-
-                  <select
-                    name="ward"
-                    id="ward"
-                    className="form-control"
-                    value={ward}
-                    onChange={(e) => setWard(e.target.value)}
-                    required
-                  >
-                    <option hidden>Vui lòng chọn xã/phường...</option>
-                    {addressData &&
-                      addressData.map(
-                        (tp) =>
-                          tp.Name === city &&
-                          tp.Districts.map(
-                            (h) =>
-                              h.Name === district &&
-                              h.Wards.map((x) => (
-                                <option key={x.Id} value={x.Name}>
-                                  {x.Name}
+                  <div className="w-100 d-flex align-items-center">
+                    <label className="text-left mr-2">Address</label>
+                    <div className="address-add-user">
+                      <select
+                        name="country"
+                        id="country"
+                        className="form-control"
+                      >
+                        <option selected value="1">
+                          Việt Nam
+                        </option>
+                      </select>
+                      <select
+                        name="city"
+                        id="city"
+                        className="form-control"
+                        value={values.city}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      >
+                        <option hidden>Vui lòng chọn thành phố/tỉnh...</option>
+                        {addressData?.map((tp) => (
+                          <option key={tp.Id} value={tp.Name}>
+                            {tp.Name}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        name="district"
+                        id="district"
+                        className="form-control"
+                        value={values.district}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      >
+                        <option hidden>Vui lòng chọn quận/huyện...</option>
+                        {addressData &&
+                          addressData.map(
+                            (tp) =>
+                              tp.Name === values.city &&
+                              tp.Districts.map((h) => (
+                                <option key={h.Id} value={h.Name}>
+                                  {h.Name}
                                 </option>
                               ))
-                          )
-                      )}
-                  </select>
-                </div>
-              </div>
-              <div className="w-100">
-                <label className="text-right mr-2"></label>
-                <input type="text" name="address" />
-              </div>
+                          )}
+                      </select>
 
-              <div className="w-100 d-flex">
-                <label className="text-left mr-2">Note</label>
-                <textarea name="note" id="note"></textarea>
-              </div>
+                      <select
+                        name="ward"
+                        id="ward"
+                        className="form-control"
+                        value={values.ward}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      >
+                        <option hidden>Vui lòng chọn xã/phường...</option>
+                        {addressData &&
+                          addressData.map(
+                            (tp) =>
+                              tp.Name === values.city &&
+                              tp.Districts.map(
+                                (h) =>
+                                  h.Name === values.district &&
+                                  h.Wards.map((x) => (
+                                    <option key={x.Id} value={x.Name}>
+                                      {x.Name}
+                                    </option>
+                                  ))
+                              )
+                          )}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="w-100">
+                    <label className="text-right mr-2"></label>
+                    <input type="text" name="address" />
+                  </div>
 
-              <div className="d-flex justify-content-end mt-3">
-                <div
-                  className="btn btn-secondary"
-                  onClick={() => handleClose()}
-                >
-                  Cancel
-                </div>
-                <button type="submit" className="btn btn-success ms-3">
-                  Save
-                </button>
-              </div>
-            </form>
+                  <div className="w-100 d-flex">
+                    <label className="text-left mr-2">Note</label>
+                    <textarea name="note" id="note"></textarea>
+                  </div>
+
+                  <div className="d-flex justify-content-end mt-3">
+                    <div
+                      className="btn btn-secondary"
+                      onClick={() => handleClose()}
+                    >
+                      Cancel
+                    </div>
+                    <button type="submit" className="btn btn-success ms-3">
+                      Save
+                    </button>
+                  </div>
+                </form>
+              )}
+            </Formik>
           </div>
         </Box>
       </Modal>
